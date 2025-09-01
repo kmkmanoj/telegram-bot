@@ -308,12 +308,12 @@
                     <div class="spin-wheel" id="wheel">
                         <div class="wheel-item" style="transform: rotate(0deg);">10</div>
                         <div class="wheel-item" style="transform: rotate(45deg);">20</div>
-                        <div class="wheel-item" style="transform: rotate(90deg);">50</div>
+                        <div class="wheel-item" style="transform: rotate(90deg);">30</div>
                         <div class="wheel-item" style="transform: rotate(135deg);">100</div>
                         <div class="wheel-item" style="transform: rotate(180deg);">5</div>
-                        <div class="wheel-item" style="transform: rotate(225deg);">30</div>
-                        <div class="wheel-item" style="transform: rotate(270deg);">70</div>
-                        <div class="wheel-item" style="transform: rotate(315deg);">15</div>
+                        <div class="wheel-item" style="transform: rotate(225deg);">25</div>
+                        <div class="wheel-item" style="transform: rotate(270deg);">15</div>
+                        <div class="wheel-item" style="transform: rotate(315deg);">19</div>
                         <div class="wheel-center">SPIN</div>
                     </div>
                     <div class="wheel-pointer"></div>
@@ -504,7 +504,7 @@
             profileEmailEl.textContent = userData.email || 'No Email';
             referralCodeEl.textContent = userData.referralCode || '...';
             minWithdrawalInfoEl.textContent = `${appConfig.minWithdrawal || 5000} Coins`;
-            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 1000} Coins = ₹${appConfig.coinValueInr || 10}`;
+            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 10000} Coins = ₹${appConfig.coinValueInr || 10}`;
             withdrawMethodSelect.innerHTML = '';
             (appConfig.paymentMethods || []).forEach(method => {
                 const option = document.createElement('option');
@@ -593,7 +593,7 @@
             const selectedMethod = withdrawMethodSelect.value.toLowerCase();
             let placeholder = "Enter Details";
             if (selectedMethod.includes('upi')) placeholder = "Enter your UPI ID";
-            if (selectedMethod.includes('paytm')) placeholder = "Enter your Paytm Number";
+            if (selectedMethod.includes('phonepe')) placeholder = "Enter your Phonepe Number";
             paymentDetailsContainer.innerHTML = `<input id="payment-detail-input" type="text" placeholder="${placeholder}" class="w-full p-3 rounded-lg input-field">`;
         }
 
@@ -823,7 +823,7 @@
             if (!amount || amount <= 0) return showAlert("Please enter a valid amount.");
             if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${minWithdrawal} coins.`);
             if (amount > userData.balance) return showAlert("Insufficient balance.");
-            if (!paymentDetail) return showAlert("Please enter payment details (UPI ID or Paytm Number).");
+            if (!paymentDetail) return showAlert("Please enter payment details (UPI ID or Phonepe Number).");
 
             try {
                 await updateBalance(-amount);
@@ -925,7 +925,7 @@
                 
                 // Calculate prize based on final position (simplified)
                 setTimeout(async () => {
-                    const prizes = [10, 20, 50, 100, 5, 30, 70, 15];
+                    const prizes = [10, 20, 30, 100, 5, 25, 15, 19];
                     const prizeIndex = Math.floor((degrees % 360) / 45);
                     const prize = prizes[prizeIndex];
                     
