@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailyMint App</title>
+    
+    <!-- Monotag Telegram Ads SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='9804953' data-sdk='show_9804953'></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: #ffffff; 
+        }
+        .dark-bg { background-color: #1a202c; }
+        .card-bg { 
+            background-color: #2d3748; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .border-accent { border-color: #4299e1; }
+        .text-accent { color: #4299e1; }
+        .btn, .btn-accent, .btn-outline-accent { 
+            transition: all 0.2s ease-in-out; 
+            transform: scale(1); 
+        }
+        .btn:active, .btn-accent:active, .btn-outline-accent:active { transform: scale(0.95); }
+        .btn-accent { 
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white; 
+            font-weight: bold; 
+        }
+        .btn-accent:hover { 
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+        }
+        .btn-outline-accent { 
+            border: 1px solid #4299e1; 
+            color: #4299e1; 
+        }
+        .btn-outline-accent:hover { 
+            background-color: #4299e1; 
+            color: white; 
+        }
+        .input-field { 
+            background-color: #4a5568; 
+            border: 1px solid #718096; 
+            color: white;
+        }
+        .input-field::placeholder {
+            color: #a0aec0;
+        }
+        .main-page { display: none; }
+        .main-page.active { display: flex; animation: fadeIn 0.5s ease-in-out; }
+        .sub-page { display: none; }
+        .sub-page.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .bottom-nav a.active { color: #4299e1; }
+        .notification-dot {
+            position: absolute; top: -2px; right: -2px; width: 10px; height: 10px;
+            background-color: #e53e3e; border-radius: 50%; border: 2px solid #1a202c; display: none;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .progress-bar {
+            height: 8px;
+            background-color: #4a5568;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .task-completed {
+            opacity: 0.7;
+            position: relative;
+        }
+        .task-completed::after {
+            content: "✓ COMPLETED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #4299e1;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            z-index: 10;
+        }
+        .spin-wheel {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg, 
+                #4299e1, #3182ce, #4299e1, #3182ce, 
+                #4299e1, #3182ce, #4299e1, #3182ce
+            );
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(66, 153, 225, 0.5);
+        }
+        .wheel-center {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #2d3748;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4299e1;
+            font-weight: bold;
+            border: 4px solid #4299e1;
+        }
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #4299e1;
+            z-index: 10;
+        }
+        .scratch-card-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+        }
+        .scratch-card-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 10px;
+        }
+        .scratch-card-image {
+            width: 140px;
+            height: 140px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .back-button {
+            cursor: pointer;
+        }
+        .auth-container {
+            background: rgba(45, 55, 72, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .logo-gradient {
+            background: linear-gradient(135deg, #4299e1 0%, #38b2ac 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto">
+
+    <!-- App Loader -->
+    <div id="loader" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="min-h-screen p-6 flex-col justify-center main-page active">
+        <div class="auth-container">
+            <h1 class="text-4xl font-bold text-center mb-2 logo-gradient">DailyMint</h1>
+            <p class="text-center text-gray-400 mb-8">Login or Signup to continue</p>
+            <div id="auth-container">
+                <div id="login-view">
+                    <input id="login-email" type="email" placeholder="Email" class="w-full p-3 rounded-lg input-field mb-4">
+                    <input id="login-password" type="password" placeholder="Password" class="w-full p-3 rounded-lg input-field mb-4">
+                    <button id="login-btn" class="w-full p-3 rounded-lg btn-accent mb-4">Login</button>
+                    <p class="text-center text-gray-400">Don't have an account? <a href="#" id="show-signup" class="font-semibold text-blue-400">Sign Up</a></p>
+                </div>
+                <div id="signup-view" class="hidden">
+                    <input id="signup-name" type="text" placeholder="Full Name" class="w-full p-3 rounded-lg input-field mb-4">
+                    <input id="signup-email" type="email" placeholder="Email" class="w-full p-3 rounded-lg input-field mb-4">
+                    <input id="signup-password" type="password" placeholder="Password" class="w-full p-3 rounded-lg input-field mb-4">
+                    <input id="signup-referral" type="text" placeholder="Referral Code (Optional)" class="w-full p-3 rounded-lg input-field mb-4">
+                    <button id="signup-btn" class="w-full p-3 rounded-lg btn-accent mb-4">Sign Up</button>
+                    <p class="text-center text-gray-400">Already have an account? <a href="#" id="show-login" class="font-semibold text-blue-400">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="min-h-screen flex-col main-page">
+        <header class="flex items-center justify-between p-4 sticky top-0 bg-opacity-80 backdrop-blur-md z-10 bg-gray-900">
+            <div class="flex items-center">
+                <i id="back-button" class="back-button hidden mr-2" data-lucide="arrow-left" onclick="goBack()"></i>
+                <h1 class="text-xl font-bold text-white">DailyMint</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="notification-bell" class="relative cursor-pointer">
+                    <i data-lucide="bell" class="w-6 h-6 text-white"></i>
+                    <div id="notification-dot" class="notification-dot"></div>
+                </div>
+                <i data-lucide="user" class="w-6 h-6 cursor-pointer text-white" onclick="navigateTo('profile-page')"></i>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Home Page -->
+            <div id="home-page" class="p-4 space-y-6 sub-page active">
+                <div class="card-bg p-4 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Your Balance</p>
+                        <p class="text-3xl font-bold"><span id="coin-balance">0</span> Coins</p>
+                    </div>
+                    <button id="home-withdraw-btn" class="bg-white text-gray-900 font-semibold px-6 py-2 rounded-lg">Withdraw</button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors" onclick="navigateTo('spin-wheel-page')">
+                        <i data-lucide="circle" class="w-8 h-8 mx-auto mb-2 text-blue-400"></i>
+                        <p class="text-sm font-medium">Spin Wheel</p>
+                    </div>
+                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors" onclick="navigateTo('scratch-card-page')">
+                        <i data-lucide="square" class="w-8 h-8 mx-auto mb-2 text-blue-400"></i>
+                        <p class="text-sm font-medium">Scratch Cards</p>
+                    </div>
+                </div>
+                
+                <section>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-semibold">Daily Tasks</h2>
+                            <p class="text-sm text-gray-400 mb-4">Complete tasks to get rewards.</p>
+                        </div>
+                        <p class="text-sm text-gray-400">Ads Left: <span id="ads-left-count">...</span></p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-blue-500 p-3 rounded-lg flex items-center justify-between text-white">
+                            <div class="flex items-center space-x-3"><span class="text-3xl">🤩</span><div><h3 class="font-bold">Watch Short Ad</h3><p class="text-xs font-medium">Rewarded Interstitial</p></div></div>
+                            <button class="bg-white text-blue-500 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('interstitial')">Claim</button>
+                        </div>
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-3"><span class="text-3xl">😎</span><div><h3 class="font-semibold">Click for Reward</h3><p class="text-xs text-gray-400">Rewarded Popup</p></div></div>
+                            <button class="bg-white text-gray-900 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('popup')">Claim</button>
+                        </div>
+                         <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-3"><span class="text-3xl">👀</span><div><h3 class="font-semibold">Watch a Video</h3><p class="text-xs text-gray-400">Rewarded Interstitial</p></div></div>
+                            <button class="bg-white text-gray-900 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('interstitial')">Start</button>
+                        </div>
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-3"><span class="text-3xl">🎮</span><div><h3 class="font-semibold">Play Mini App</h3><p class="text-xs text-gray-400">Get a big reward!</p></div></div>
+                            <button class="bg-blue-500 text-white font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('miniApp')">Play</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Daily Login Bonus -->
+                <section>
+                    <h2 class="text-lg font-semibold mb-3">Daily Login Bonus</h2>
+                    <div class="card-bg p-4 rounded-lg">
+                        <div class="flex justify-between mb-2">
+                            <span>Day 1: 10 Coins</span>
+                            <span id="day1-status" class="text-blue-400">✓</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span>Day 2: 20 Coins</span>
+                            <span id="day2-status" class="text-gray-400">-</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span>Day 3: 30 Coins</span>
+                            <span id="day3-status" class="text-gray-400">-</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span>Day 4: 40 Coins</span>
+                            <span id="day4-status" class="text-gray-400">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Day 5: 50 Coins</span>
+                            <span id="day5-status" class="text-gray-400">-</span>
+                        </div>
+                        <div class="progress-bar mt-3">
+                            <div id="login-progress" class="progress-fill" style="width: 20%"></div>
+                        </div>
+                        <button id="claim-login-bonus" class="w-full p-3 rounded-lg btn-accent mt-4">Claim Today's Bonus</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Wallet Page -->
+            <div id="wallet-page" class="p-4 space-y-6 sub-page">
+                <h2 class="text-xl font-bold text-center">My Wallet</h2>
+                <div class="card-bg p-4 rounded-lg">
+                    <h3 class="font-semibold mb-3">Withdraw Earnings</h3>
+                    <p class="text-sm text-gray-400 mb-1">Current Balance: <span class="font-bold text-blue-400"><span id="wallet-coin-balance">0</span> Coins</span></p>
+                    <p class="text-sm text-gray-400 mb-2">Minimum Withdrawal: <span id="min-withdrawal-info">...</span> Coins</p>
+                    <p class="text-sm text-gray-400 mb-4 font-semibold" id="coin-value-info">...</p>
+                    <input id="withdraw-amount" type="number" placeholder="Enter coin amount" class="w-full p-3 rounded-lg input-field mb-3">
+                    <select id="withdraw-method" class="w-full p-3 rounded-lg input-field mb-3"></select>
+                    <div id="payment-details-container"></div>
+                    <button id="withdraw-btn" class="w-full p-3 rounded-lg btn-accent mt-3">Request Withdrawal</button>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Withdrawal History</h3>
+                    <div id="withdrawal-history-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Refer Page -->
+            <div id="refer-page" class="p-4 space-y-6 sub-page">
+                 <h2 class="text-xl font-bold text-center">Refer & Earn</h2>
+                 <div class="card-bg p-6 rounded-lg text-center">
+                     <p class="text-gray-400 mb-2">Your Referral Code</p>
+                     <div class="bg-gray-700 p-3 rounded-lg flex items-center justify-center mb-4">
+                         <span id="referral-code" class="text-2xl font-bold tracking-widest">LOADING...</span>
+                         <button id="copy-code-btn" class="ml-4"><i data-lucide="copy" class="w-6 h-6 text-gray-400"></i></button>
+                     </div>
+                     <p class="text-sm text-gray-300">Share your code with friends.</p>
+                 </div>
+                 <button id="share-btn" class="w-full p-3 rounded-lg btn-accent">Share Your Code</button>
+                 <div class="card-bg p-4 rounded-lg mt-6">
+                    <h3 class="font-semibold mb-3 text-center">Have someone's referral code?</h3>
+                    <input id="enter-referral-code" type="text" placeholder="Enter code here" class="w-full p-3 rounded-lg input-field mb-3">
+                    <button id="apply-referral-btn" class="w-full p-3 rounded-lg btn-outline-accent">Apply Code</button>
+                 </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="p-4 space-y-6 sub-page">
+                <h2 class="text-xl font-bold text-center mb-4">Profile</h2>
+                <div class="flex flex-col items-center">
+                    <div class="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold mb-2">
+                        <span id="profile-initial">U</span>
+                    </div>
+                    <h2 id="profile-name" class="text-xl font-bold">User Name</h2>
+                    <p id="profile-email" class="text-gray-400">user@email.com</p>
+                </div>
+                
+                <!-- Bonus Codes Section -->
+                <div class="card-bg p-4 rounded-lg mt-4">
+                    <h3 class="font-semibold mb-3">Bonus Codes</h3>
+                    <input id="bonus-code-input" type="text" placeholder="Enter bonus code" class="w-full p-3 rounded-lg input-field mb-3">
+                    <button id="apply-bonus-code-btn" class="w-full p-3 rounded-lg btn-outline-accent">Apply Code</button>
+                </div>
+                
+                <button id="logout-btn" class="w-full mt-6 p-3 rounded-lg bg-red-600 text-white font-bold">Logout</button>
+            </div>
+            
+            <!-- Notifications Page -->
+            <div id="notifications-page" class="p-4 space-y-4 sub-page">
+                <h2 class="text-xl font-bold text-center">Notifications</h2>
+                <div id="notifications-list" class="space-y-3"></div>
+            </div>
+            
+            <!-- Spin Wheel Page -->
+            <div id="spin-wheel-page" class="p-4 space-y-6 sub-page">
+                <h2 class="text-xl font-bold text-center">Lucky Spin Wheel</h2>
+                <p class="text-center text-gray-400 mb-4">Spin and win amazing rewards!</p>
+                
+                <div class="spin-wheel-container relative">
+                    <div class="spin-wheel" id="wheel">
+                        <div class="wheel-item" style="transform: rotate(0deg);">10</div>
+                        <div class="wheel-item" style="transform: rotate(45deg);">20</div>
+                        <div class="wheel-item" style="transform: rotate(90deg);">30</div>
+                        <div class="wheel-item" style="transform: rotate(135deg);">100</div>
+                        <div class="wheel-item" style="transform: rotate(180deg);">5</div>
+                        <div class="wheel-item" style="transform: rotate(225deg);">25</div>
+                        <div class="wheel-item" style="transform: rotate(270deg);">15</div>
+                        <div class="wheel-item" style="transform: rotate(315deg);">19</div>
+                        <div class="wheel-center">SPIN</div>
+                    </div>
+                    <div class="wheel-pointer"></div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p class="text-gray-400 mb-2">Spins Left Today: <span id="spins-left">3</span></p>
+                    <button id="spin-btn" class="w-full p-3 rounded-lg btn-accent">Spin Now (Watch Ad)</button>
+                </div>
+            </div>
+            
+            <!-- Scratch Cards Page -->
+            <div id="scratch-card-page" class="p-4 space-y-6 sub-page">
+                <h2 class="text-xl font-bold text-center">Scratch Cards</h2>
+                <p class="text-center text-gray-400 mb-4">Scratch and win instant rewards!</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="scratch-card-container" onclick="initiateScratchCard(1)">
+                        <div class="scratch-card-image">Up to 50 Coins</div>
+                        <canvas id="scratchCanvas1" width="140" height="140" class="scratch-card-canvas"></canvas>
+                    </div>
+                    <div class="scratch-card-container" onclick="initiateScratchCard(2)">
+                        <div class="scratch-card-image">Up to 100 Coins</div>
+                        <canvas id="scratchCanvas2" width="140" height="140" class="scratch-card-canvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p class="text-gray-400 mb-2">Cards Left Today: <span id="cards-left">2</span></p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav sticky bottom-0 grid grid-cols-4 items-center text-center py-2 card-bg border-t border-gray-700">
+            <a href="#" class="nav-link active" data-page="home-page"><i data-lucide="home" class="mx-auto w-6 h-6"></i><span class="text-xs">Home</span></a>
+            <a href="#" class="nav-link" data-page="wallet-page"><i data-lucide="wallet" class="mx-auto w-6 h-6"></i><span class="text-xs">Wallet</span></a>
+            <a href="#" class="nav-link" data-page="refer-page"><i data-lucide="users" class="mx-auto w-6 h-6"></i><span class="text-xs">Refer & Earn</span></a>
+            <a href="#" class="nav-link" data-page="profile-page"><i data-lucide="user" class="mx-auto w-6 h-6"></i><span class="text-xs">Profile</span></a>
+        </nav>
+    </div>
+    
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-sm text-center">
+            <p id="alert-message" class="mb-4"></p>
+            <button id="alert-ok-btn" class="btn-accent px-6 py-2 rounded-lg">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        const firebaseConfig = {
+            apiKey: "AIzaSyCE3pgdQPwk3YDmvFiDt504gy6GAstRudQ",
+            authDomain: "wallet-money-37b8b.firebaseapp.com",
+            databaseURL: "https://wallet-money-37b8b-default-rtdb.firebaseio.com",
+            projectId: "wallet-money-37b8b",
+            storageBucket: "wallet-money-37b8b.firebasestorage.app",
+            messagingSenderId: "295432671695",
+            appId: "1:295432671695:web:b708527be87890b13382ba",
+            measurementId: "G-QCYFS68YHT"
+        };
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, update, child, push, onValue, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let userData = null;
+        let appConfig = {};
+        let pageHistory = ['home-page'];
+        let scratchCardActive = false;
+        let scratchCardContext = null;
+        let scratchCardId = null;
+
+        const loader = document.getElementById('loader');
+        const coinBalanceEl = document.getElementById('coin-balance');
+        const walletCoinBalanceEl = document.getElementById('wallet-coin-balance');
+        const profileNameEl = document.getElementById('profile-name');
+        const profileEmailEl = document.getElementById('profile-email');
+        const profileInitialEl = document.getElementById('profile-initial');
+        const referralCodeEl = document.getElementById('referral-code');
+        const minWithdrawalInfoEl = document.getElementById('min-withdrawal-info');
+        const coinValueInfoEl = document.getElementById('coin-value-info');
+        const withdrawMethodSelect = document.getElementById('withdraw-method');
+        const notificationDot = document.getElementById('notification-dot');
+        const adsLeftCountEl = document.getElementById('ads-left-count');
+        const paymentDetailsContainer = document.getElementById('payment-details-container');
+        const spinsLeftEl = document.getElementById('spins-left');
+        const cardsLeftEl = document.getElementById('cards-left');
+        const backButton = document.getElementById('back-button');
+
+        window.onload = () => {
+            lucide.createIcons();
+            setupEventListeners();
+            showMainPage('auth-section');
+            loader.style.display = 'none';
+            onAuthStateChanged(auth, handleAuthStateChange);
+        };
+
+        function goBack() {
+            if (pageHistory.length > 1) {
+                pageHistory.pop(); // Remove current page
+                const prevPage = pageHistory.pop(); // Get previous page
+                navigateTo(prevPage);
+            }
+        }
+
+        async function handleAuthStateChange(user) {
+            if (user) {
+                loader.style.display = 'flex';
+                currentUser = user;
+                await fetchUserData();
+                if (userData && userData.isBlocked) {
+                    showAlert("Your account has been blocked.");
+                    await signOut(auth);
+                    loader.style.display = 'none';
+                    return;
+                }
+                await fetchAppConfig();
+                await checkNewNotifications();
+                updateUI();
+                showMainPage('app-container');
+                navigateTo('home-page');
+                loader.style.display = 'none';
+            } else {
+                currentUser = null;
+                userData = null;
+                showMainPage('auth-section');
+            }
+        }
+
+        async function fetchUserData() {
+            if (!currentUser) return;
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            try {
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    userData = snapshot.val();
+                    
+                    // Check if user has already claimed today's login bonus
+                    const today = new Date().toISOString().split('T')[0];
+                    if (userData.lastLoginBonusDate === today) {
+                        document.getElementById('claim-login-bonus').textContent = 'Already Claimed Today';
+                        document.getElementById('claim-login-bonus').disabled = true;
+                        document.getElementById('claim-login-bonus').classList.remove('btn-accent');
+                        document.getElementById('claim-login-bonus').classList.add('bg-gray-600');
+                    }
+                } else {
+                    // Create new user data if it doesn't exist
+                    const ownReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    const referralCodeInput = document.getElementById('signup-referral');
+                    const referredBy = referralCodeInput ? referralCodeInput.value.trim().toUpperCase() : null;
+                    
+                    const defaultUserData = {
+                        uid: currentUser.uid, 
+                        name: document.getElementById('signup-name') ? document.getElementById('signup-name').value : currentUser.email.split('@')[0], 
+                        email: currentUser.email,
+                        balance: 50, 
+                        referralCode: ownReferralCode, 
+                        referredBy: referredBy,
+                        lastNotificationCheck: Date.now(),
+                        createdAt: Date.now(),
+                        dailyAdCount: 0, 
+                        lastAdWatchDate: new Date().toISOString().split('T')[0], 
+                        spinCount: 0, 
+                        lastSpinDate: new Date().toISOString().split('T')[0],
+                        scratchCount: 0, 
+                        lastScratchDate: new Date().toISOString().split('T')[0],
+                        loginStreak: 0, 
+                        lastLoginDate: null,
+                        lastLoginBonusDate: null,
+                        isBlocked: false,
+                        usedBonusCodes: {},
+                        notificationsRead: true
+                    };
+                    await set(userRef, defaultUserData);
+                    userData = defaultUserData;
+                    
+                    // Apply referral bonus if applicable
+                    if (referredBy && referredBy !== ownReferralCode) {
+                        await applyReferralBonus(referredBy, false);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                showAlert("Error loading user data. Please try again.");
+            }
+        }
+
+        async function fetchAppConfig() {
+            const configRef = ref(db, 'config/main');
+            try {
+                const snapshot = await get(configRef);
+                appConfig = snapshot.exists() ? snapshot.val() : { 
+                    minWithdrawal: 5000, 
+                    paymentMethods: ["UPI", "Paytm"], 
+                    dailyAdLimit: 10, 
+                    coinValueCoins: 1000, 
+                    coinValueInr: 10,
+                    dailySpinLimit: 3,
+                    dailyScratchLimit: 2,
+                    bonusCodes: {
+                        "WELCOME100": { coins: 100, expires: 1735689600000 },
+                        "FREECOINS50": { coins: 50, expires: 1735689600000 }
+                    }
+                };
+            } catch (error) {
+                console.error("Error fetching app config:", error);
+            }
+        }
+        
+        function updateUI() {
+            if (!userData) return;
+            const balance = userData.balance || 0;
+            coinBalanceEl.textContent = balance;
+            walletCoinBalanceEl.textContent = balance;
+            profileNameEl.textContent = userData.name || 'No Name';
+            profileEmailEl.textContent = userData.email || 'No Email';
+            
+            // Set profile initial
+            if (userData.name) {
+                profileInitialEl.textContent = userData.name.charAt(0).toUpperCase();
+            } else if (userData.email) {
+                profileInitialEl.textContent = userData.email.charAt(0).toUpperCase();
+            }
+            
+            referralCodeEl.textContent = userData.referralCode || '...';
+            minWithdrawalInfoEl.textContent = `${appConfig.minWithdrawal || 5000} Coins`;
+            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 1000} Coins = ₹${appConfig.coinValueInr || 10}`;
+            withdrawMethodSelect.innerHTML = '';
+            (appConfig.paymentMethods || []).forEach(method => {
+                const option = document.createElement('option');
+                option.value = method;
+                option.textContent = method;
+                withdrawMethodSelect.appendChild(option);
+            });
+            updateDynamicPaymentFields();
+            updateAdsLeftCount();
+            updateSpinCount();
+            updateScratchCount();
+            updateLoginStreak();
+            
+            // Show/hide back button
+            if (pageHistory.length > 1) {
+                backButton.classList.remove('hidden');
+            } else {
+                backButton.classList.add('hidden');
+            }
+        }
+
+        function updateAdsLeftCount() {
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastAdWatchDate !== today) {
+                userData.dailyAdCount = 0;
+            }
+            const adsLeft = Math.max(0, (appConfig.dailyAdLimit || 10) - userData.dailyAdCount);
+            adsLeftCountEl.textContent = adsLeft;
+        }
+        
+        function updateSpinCount() {
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastSpinDate !== today) {
+                userData.spinCount = 0;
+            }
+            const spinsLeft = Math.max(0, (appConfig.dailySpinLimit || 3) - userData.spinCount);
+            spinsLeftEl.textContent = spinsLeft;
+        }
+        
+        function updateScratchCount() {
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastScratchDate !== today) {
+                userData.scratchCount = 0;
+            }
+            const cardsLeft = Math.max(0, (appConfig.dailyScratchLimit || 2) - userData.scratchCount);
+            cardsLeftEl.textContent = cardsLeft;
+        }
+        
+        function updateLoginStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            
+            if (!userData.lastLoginDate) {
+                // First login
+                userData.loginStreak = 1;
+            } else if (userData.lastLoginDate === yesterdayStr) {
+                // Consecutive login
+                userData.loginStreak = (userData.loginStreak || 0) + 1;
+            } else if (userData.lastLoginDate !== today) {
+                // Broken streak
+                userData.loginStreak = 1;
+            }
+            
+            // Update last login date to today
+            userData.lastLoginDate = today;
+            
+            // Update UI for login bonus
+            const streak = userData.loginStreak || 1;
+            const progressPercent = Math.min(100, (streak / 5) * 100);
+            document.getElementById('login-progress').style.width = `${progressPercent}%`;
+            
+            // Update day statuses
+            for (let i = 1; i <= 5; i++) {
+                const statusEl = document.getElementById(`day${i}-status`);
+                if (statusEl) {
+                    if (i < streak) {
+                        statusEl.textContent = '✓';
+                        statusEl.className = 'text-blue-400';
+                    } else if (i === streak) {
+                        statusEl.textContent = 'Today';
+                        statusEl.className = 'text-blue-400';
+                    } else {
+                        statusEl.textContent = '-';
+                        statusEl.className = 'text-gray-400';
+                    }
+                }
+            }
+        }
+
+        function updateDynamicPaymentFields() {
+            const selectedMethod = withdrawMethodSelect.value.toLowerCase();
+            let placeholder = "Enter Details";
+            if (selectedMethod.includes('upi')) placeholder = "Enter your UPI ID";
+            if (selectedMethod.includes('paytm')) placeholder = "Enter your Paytm Number";
+            paymentDetailsContainer.innerHTML = `<input id="payment-detail-input" type="text" placeholder="${placeholder}" class="w-full p-3 rounded-lg input-field">`;
+        }
+
+        function showMainPage(pageId) {
+            document.querySelectorAll('.main-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active', 'text-blue-400');
+                if (link.dataset.page === pageId) link.classList.add('active', 'text-blue-400');
+            });
+            
+            // Update page history
+            if (pageHistory[pageHistory.length - 1] !== pageId) {
+                pageHistory.push(pageId);
+            }
+            
+            // Show/hide back button
+            if (pageHistory.length > 1 && pageId !== 'home-page') {
+                backButton.classList.remove('hidden');
+            } else {
+                backButton.classList.add('hidden');
+            }
+            
+            // Load specific data for certain pages
+            if (pageId === 'wallet-page') loadWithdrawalHistory();
+            if (pageId === 'notifications-page') loadNotifications();
+        }
+        window.navigateTo = navigateTo;
+
+        function setupEventListeners() {
+            document.getElementById('show-signup').addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                document.getElementById('login-view').classList.add('hidden'); 
+                document.getElementById('signup-view').classList.remove('hidden'); 
+            });
+            document.getElementById('show-login').addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                document.getElementById('signup-view').classList.add('hidden'); 
+                document.getElementById('login-view').classList.remove('hidden'); 
+            });
+            document.getElementById('signup-btn').addEventListener('click', handleSignup);
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    navigateTo(pageId);
+                });
+            });
+            document.getElementById('notification-bell').addEventListener('click', () => { 
+                navigateTo('notifications-page'); 
+            });
+            document.getElementById('copy-code-btn').addEventListener('click', copyReferralCode);
+            document.getElementById('share-btn').addEventListener('click', shareReferralCode);
+            document.getElementById('withdraw-btn').addEventListener('click', handleWithdrawal);
+            document.getElementById('home-withdraw-btn').addEventListener('click', () => navigateTo('wallet-page'));
+            document.getElementById('apply-referral-btn').addEventListener('click', handleApplyReferralCode);
+            document.getElementById('claim-login-bonus').addEventListener('click', claimLoginBonus);
+            document.getElementById('spin-btn').addEventListener('click', spinWheel);
+            document.getElementById('apply-bonus-code-btn').addEventListener('click', handleBonusCode);
+            withdrawMethodSelect.addEventListener('change', updateDynamicPaymentFields);
+            
+            // Setup scratch card event listeners
+            setupScratchCards();
+        }
+
+        async function handleSignup() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            if (!name || !email || !password) {
+                return showAlert("Please fill all fields.");
+            }
+            
+            if (password.length < 6) {
+                return showAlert("Password should be at least 6 characters.");
+            }
+            
+            loader.style.display = 'flex';
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // User creation successful, handleAuthStateChange will be triggered automatically
+            } catch (error) {
+                console.error("Signup error:", error);
+                let errorMessage = "Signup failed. Please try again.";
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "This email is already registered. Please login instead.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Invalid email address format.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "Password is too weak. Please use a stronger password.";
+                }
+                
+                showAlert(errorMessage);
+                loader.style.display = 'none';
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                return showAlert("Please enter email and password.");
+            }
+            
+            loader.style.display = 'flex';
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                // Login successful, handleAuthStateChange will be triggered automatically
+            } catch (error) {
+                console.error("Login error:", error);
+                let errorMessage = "Login failed. Please try again.";
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = "No account found with this email. Please sign up first.";
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = "Incorrect password. Please try again.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Invalid email address format.";
+                }
+                
+                showAlert(errorMessage);
+                loader.style.display = 'none';
+            }
+        }
+
+        async function handleLogout() { 
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout error:", error);
+                showAlert("Error logging out. Please try again.");
+            }
+        }
+        
+        async function checkNewNotifications() {
+            if (!userData.lastNotificationCheck) return;
+            
+            const notificationsRef = ref(db, 'notifications');
+            
+            try {
+                const snapshot = await get(notificationsRef);
+                if (snapshot.exists()) {
+                    const notifications = snapshot.val();
+                    const notificationArray = Object.values(notifications);
+                    
+                    // Check if there are new notifications since last check
+                    const newNotifications = notificationArray.filter(notif => 
+                        notif.createdAt > userData.lastNotificationCheck
+                    );
+                    
+                    if (newNotifications.length > 0 || !userData.notificationsRead) {
+                        notificationDot.style.display = 'block';
+                    } else {
+                        notificationDot.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking notifications:", error);
+            }
+        }
+
+        async function loadNotifications() {
+            const listEl = document.getElementById('notifications-list');
+            listEl.innerHTML = '<p class="text-gray-400">Loading...</p>';
+            
+            const notificationsRef = ref(db, 'notifications');
+            
+            try {
+                const snapshot = await get(notificationsRef);
+                if (!snapshot.exists()) {
+                    listEl.innerHTML = '<p class="text-gray-400 text-center">No notifications yet.</p>';
+                    return;
+                }
+                
+                listEl.innerHTML = '';
+                const notifications = snapshot.val();
+                
+                // Convert to array and sort by creation date (newest first)
+                const notificationArray = Object.values(notifications);
+                notificationArray.sort((a, b) => b.createdAt - a.createdAt);
+                
+                notificationArray.forEach(notification => {
+                    const date = new Date(notification.createdAt).toLocaleDateString();
+                    listEl.innerHTML += `<div class="card-bg p-4 rounded-lg"><div class="flex justify-between items-center mb-1"><h3 class="font-bold">${notification.title || 'Notification'}</h3><p class="text-xs text-gray-400">${date}</p></div><p class="text-sm text-gray-300">${notification.message || 'No message'}</p></div>`;
+                });
+                
+                // Update last notification check time and mark as read
+                const userRef = ref(db, 'users/' + currentUser.uid);
+                await update(userRef, { 
+                    lastNotificationCheck: Date.now(),
+                    notificationsRead: true 
+                });
+                userData.lastNotificationCheck = Date.now();
+                userData.notificationsRead = true;
+                notificationDot.style.display = 'none';
+                
+            } catch (error) {
+                console.error("Error loading notifications:", error);
+                listEl.innerHTML = '<p class="text-red-400">Error loading notifications.</p>';
+            }
+        }
+
+        async function loadWithdrawalHistory() {
+            const historyList = document.getElementById('withdrawal-history-list');
+            historyList.innerHTML = '<p class="text-gray-400">Loading history...</p>';
+            
+            const withdrawalsRef = ref(db, 'withdrawals');
+            
+            try {
+                const snapshot = await get(withdrawalsRef);
+                if (!snapshot.exists()) {
+                    historyList.innerHTML = '<p class="text-gray-400">You haven\'t made any withdrawals yet.</p>';
+                    return;
+                }
+                
+                const withdrawals = snapshot.val();
+                
+                // Convert to array, filter by user ID, and sort by date (newest first)
+                const withdrawalArray = Object.values(withdrawals)
+                    .filter(request => request.userId === currentUser.uid)
+                    .sort((a, b) => b.requestedAt - a.requestedAt);
+                
+                if (withdrawalArray.length === 0) {
+                    historyList.innerHTML = '<p class="text-gray-400">You haven\'t made any withdrawals yet.</p>';
+                    return;
+                }
+                
+                historyList.innerHTML = '';
+                withdrawalArray.forEach(request => {
+                    const status = request.status || 'pending';
+                    let statusColor = 'text-yellow-400';
+                    if (status === 'approved') statusColor = 'text-green-400';
+                    else if (status === 'rejected') statusColor = 'text-red-400';
+                    
+                    const date = new Date(request.requestedAt).toLocaleDateString();
+                    historyList.innerHTML += `
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold">${request.amount} Coins - ${request.method}</p>
+                                <p class="text-xs text-gray-400">${date}</p>
+                                ${request.paymentDetail ? `<p class="text-xs text-gray-400">${request.paymentDetail}</p>` : ''}
+                            </div>
+                            <p class="font-bold ${statusColor} capitalize">${status}</p>
+                        </div>`;
+                });
+            } catch (error) {
+                console.error("Error fetching withdrawal history: ", error);
+                historyList.innerHTML = '<p class="text-red-400">Error loading withdrawal history.</p>';
+            }
+        }
+        
+        async function handleApplyReferralCode() {
+            if (userData.referredBy) return showAlert("You have already used a referral code.");
+            
+            // Check if user has completed all ads for today
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastAdWatchDate !== today || userData.dailyAdCount < (appConfig.dailyAdLimit || 10)) {
+                return showAlert("You need to complete all ads for today to apply a referral code.");
+            }
+            
+            const codeInput = document.getElementById('enter-referral-code');
+            const code = codeInput.value.trim().toUpperCase();
+            if (!code) return showAlert("Please enter a code.");
+            if (code === userData.referralCode) return showAlert("You cannot use your own referral code.");
+            loader.style.display = 'flex';
+            await applyReferralBonus(code, true);
+            codeInput.value = '';
+            loader.style.display = 'none';
+        }
+
+        async function applyReferralBonus(referrerCode, isManualApply = false) {
+            const usersRef = ref(db, 'users');
+            
+            try {
+                // Get all users and find the one with the matching referral code
+                const snapshot = await get(usersRef);
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    let referrerId = null;
+                    let referrerData = null;
+                    
+                    // Find user with matching referral code
+                    for (const [userId, user] of Object.entries(users)) {
+                        if (user.referralCode === referrerCode) {
+                            referrerId = userId;
+                            referrerData = user;
+                            break;
+                        }
+                    }
+                    
+                    if (referrerId && referrerData) {
+                        // Update referrer's balance (500 coins)
+                        const referrerRef = ref(db, 'users/' + referrerId);
+                        await update(referrerRef, { balance: (referrerData.balance || 0) + 500 });
+                        
+                        // Update current user's balance (300 coins) and referredBy field
+                        const newUserRef = ref(db, 'users/' + currentUser.uid);
+                        await update(newUserRef, { 
+                            balance: (userData.balance || 0) + 300, 
+                            referredBy: referrerCode 
+                        });
+                        
+                        userData.balance += 300; 
+                        userData.referredBy = referrerCode;
+                        updateUI();
+                        
+                        if(isManualApply) showAlert("Code applied successfully! You received 300 coins and the referrer received 500 coins.");
+                    } else {
+                        if(isManualApply) showAlert("Invalid referral code.");
+                    }
+                } else {
+                    if(isManualApply) showAlert("Invalid referral code.");
+                }
+            } catch(error) {
+                console.error("Error applying referral bonus: ", error);
+                if(isManualApply) showAlert("Error applying code.");
+            }
+        }
+
+        async function updateBalance(amount) {
+            if (!currentUser) return;
+            const newBalance = (userData.balance || 0) + amount;
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            await update(userRef, { balance: newBalance });
+            userData.balance = newBalance;
+            updateUI();
+        }
+
+        async function handleWithdrawal() {
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            const method = document.getElementById('withdraw-method').value;
+            const paymentDetailInput = document.getElementById('payment-detail-input');
+            const paymentDetail = paymentDetailInput ? paymentDetailInput.value.trim() : '';
+            const minWithdrawal = appConfig.minWithdrawal || 5000;
+
+            if (!amount || amount <= 0) return showAlert("Please enter a valid amount.");
+            if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${minWithdrawal} coins.`);
+            if (amount > userData.balance) return showAlert("Insufficient balance.");
+            if (!paymentDetail) return showAlert("Please enter payment details (UPI ID or Paytm Number).");
+
+            try {
+                await updateBalance(-amount);
+                
+                // Create withdrawal request
+                const withdrawalsRef = ref(db, 'withdrawals');
+                const newWithdrawalRef = push(withdrawalsRef);
+                
+                await set(newWithdrawalRef, {
+                    id: newWithdrawalRef.key,
+                    userId: currentUser.uid, 
+                    userName: userData.name, 
+                    userEmail: userData.email,
+                    amount: amount, 
+                    method: method, 
+                    paymentDetail: paymentDetail, 
+                    status: "pending", 
+                    requestedAt: Date.now()
+                });
+                
+                showAlert("Withdrawal request submitted successfully!");
+                document.getElementById('withdraw-amount').value = '';
+                paymentDetailInput.value = '';
+                
+                // Reload withdrawal history
+                loadWithdrawalHistory();
+            } catch (error) {
+                showAlert("Error submitting request: " + error.message);
+                await updateBalance(amount);
+            }
+        }
+
+        function copyReferralCode() {
+            const textToCopy = referralCodeEl.textContent;
+            const textArea = document.createElement("textarea");
+            textArea.style.position = 'fixed'; textArea.style.top = '-100px';
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try {
+                document.execCommand('copy');
+                showAlert("Referral code copied!");
+            } catch (err) {
+                showAlert("Failed to copy code.");
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        function shareReferralCode() {
+            const text = `Join DailyMint and earn money! Use my referral code for a bonus: ${userData.referralCode}`;
+            if (navigator.share) {
+                navigator.share({ title: 'Join DailyMint!', text: text, url: window.location.href })
+                    .catch((error) => console.error("Share failed:", error));
+            } else {
+                copyReferralCode();
+                showAlert("Share feature not available. Your referral code has been copied instead!");
+            }
+        }
+        
+        async function claimLoginBonus() {
+            // Check if user has completed all ads for today
+            const today = new Date().toISOString().split('T')[0];
+            if (userData.lastAdWatchDate !== today || userData.dailyAdCount < (appConfig.dailyAdLimit || 10)) {
+                return showAlert("You need to complete all ads for today to claim the daily bonus.");
+            }
+            
+            // Check if user has already claimed today's bonus
+            if (userData.lastLoginBonusDate === today) {
+                return showAlert("You have already claimed your daily bonus today.");
+            }
+            
+            // Show ad before claiming bonus
+            try {
+                await window.show_9804953();
+                
+                const streak = userData.loginStreak || 1;
+                let bonusAmount = 0;
+                
+                if (streak < 5) {
+                    bonusAmount = streak * 10; // 10, 20, 30, 40 coins for days 1-4
+                } else {
+                    bonusAmount = 100; // 100 coins for completing 5 days
+                    // Reset streak after 5 days
+                    userData.loginStreak = 0;
+                }
+                
+                await updateBalance(bonusAmount);
+                
+                // Update last bonus claim date
+                const userRef = ref(db, 'users/' + currentUser.uid);
+                await update(userRef, { 
+                    lastLoginBonusDate: today,
+                    loginStreak: userData.loginStreak
+                });
+                userData.lastLoginBonusDate = today;
+                
+                showAlert(`Congratulations! You received ${bonusAmount} coins for your daily login bonus!`);
+                
+                // Update the button state
+                document.getElementById('claim-login-bonus').textContent = 'Already Claimed Today';
+                document.getElementById('claim-login-bonus').disabled = true;
+                document.getElementById('claim-login-bonus').classList.remove('btn-accent');
+                document.getElementById('claim-login-bonus').classList.add('bg-gray-600');
+                
+            } catch (e) {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            }
+        }
+        
+        async function spinWheel() {
+            const today = new Date().toISOString().split('T')[0];
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            
+            if (userData.lastSpinDate !== today) {
+                await update(userRef, { spinCount: 0, lastSpinDate: today });
+                userData.spinCount = 0;
+                userData.lastSpinDate = today;
+            }
+            
+            if (userData.spinCount >= (appConfig.dailySpinLimit || 3)) {
+                return showAlert("You've used all your spins today. Try again tomorrow.");
+            }
+            
+            // Show ad before spin
+            try {
+                await window.show_9804953();
+                
+                // Increment spin count
+                const newCount = (userData.spinCount || 0) + 1;
+                await update(userRef, { spinCount: newCount });
+                userData.spinCount = newCount;
+                
+                // Perform the spin animation
+                const wheel = document.getElementById('wheel');
+                const degrees = 1080 + Math.floor(Math.random() * 360); // At least 3 full rotations
+                wheel.style.transition = 'transform 4s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                wheel.style.transform = `rotate(${degrees}deg)`;
+                
+                // Calculate prize based on final position (simplified)
+                setTimeout(async () => {
+                    const prizes = [10, 20, 30, 100, 5, 25, 15, 19];
+                    const prizeIndex = Math.floor((degrees % 360) / 45);
+                    const prize = prizes[prizeIndex];
+                    
+                    await updateBalance(prize);
+                    showAlert(`Congratulations! You won ${prize} coins!`);
+                    updateSpinCount();
+                }, 4100);
+                
+            } catch (e) {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            }
+        }
+        
+        function setupScratchCards() {
+            // Initialize scratch card canvases
+            for (let i = 1; i <= 2; i++) {
+                const canvas = document.getElementById(`scratchCanvas${i}`);
+                const ctx = canvas.getContext('2d');
+                
+                // Fill with gray overlay
+                ctx.fillStyle = 'rgba(100, 100, 100, 0.9)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add scratch text
+                ctx.font = '14px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.fillText('Scratch here!', canvas.width / 2, canvas.height / 2);
+            }
+        }
+        
+        function initiateScratchCard(cardId) {
+            if (scratchCardActive) return;
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (userData.lastScratchDate !== today) {
+                userData.scratchCount = 0;
+                userData.lastScratchDate = today;
+            }
+            
+            if (userData.scratchCount >= (appConfig.dailyScratchLimit || 2)) {
+                return showAlert("You've used all your scratch cards today. Try again tomorrow.");
+            }
+            
+            // Show ad before scratch card
+            window.show_9804953('pop').then(async () => {
+                scratchCardActive = true;
+                scratchCardId = cardId;
+                
+                const canvas = document.getElementById(`scratchCanvas${cardId}`);
+                scratchCardContext = canvas.getContext('2d');
+                
+                // Set up scratch card
+                canvas.style.cursor = 'pointer';
+                
+                // Add event listeners for scratching
+                canvas.addEventListener('mousedown', startScratching);
+                canvas.addEventListener('touchstart', startScratching);
+                
+                // Set maximum reward based on card type
+                const maxReward = cardId === 1 ? 50 : 100;
+                
+                // Generate random reward
+                const reward = Math.floor(Math.random() * maxReward) + 1;
+                
+                // Store reward in data attribute
+                canvas.setAttribute('data-reward', reward);
+                
+            }).catch(e => {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            });
+        }
+        
+        function startScratching(e) {
+            if (!scratchCardActive) return;
+            
+            const canvas = e.target;
+            const ctx = scratchCardContext;
+            const rect = canvas.getBoundingClientRect();
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            function getPosition(e) {
+                let x, y;
+                if (e.type.includes('touch')) {
+                    x = e.touches[0].clientX - rect.left;
+                    y = e.touches[0].clientY - rect.top;
+                } else {
+                    x = e.clientX - rect.left;
+                    y = e.clientY - rect.top;
+                }
+                return { x, y };
+            }
+            
+            function start(e) {
+                isDrawing = true;
+                const pos = getPosition(e);
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                
+                const pos = getPosition(e);
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = 20;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                
+                lastX = pos.x;
+                lastY = pos.y;
+                
+                // Check if enough area is scratched (30%)
+                checkScratchCompletion(canvas);
+            }
+            
+            function stop() {
+                isDrawing = false;
+            }
+            
+            // Add event listeners
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('touchstart', start);
+            
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchmove', draw);
+            
+            canvas.addEventListener('mouseup', stop);
+            canvas.addEventListener('touchend', stop);
+            canvas.addEventListener('mouseout', stop);
+            
+            // Remove the initial event listener
+            canvas.removeEventListener('mousedown', startScratching);
+            canvas.removeEventListener('touchstart', startScratching);
+        }
+        
+        function checkScratchCompletion(canvas) {
+            const ctx = scratchCardContext;
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            let transparentPixels = 0;
+            
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (pixels[i + 3] === 0) {
+                    transparentPixels++;
+                }
+            }
+            
+            const transparency = transparentPixels / (pixels.length / 4);
+            
+            // If 30% or more is scratched, reveal the reward
+            if (transparency >= 0.3) {
+                finishScratchCard(canvas);
+            }
+        }
+        
+        async function finishScratchCard(canvas) {
+            const reward = parseInt(canvas.getAttribute('data-reward'));
+            
+            // Increment scratch count
+            userData.scratchCount += 1;
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            await update(userRef, { 
+                scratchCount: userData.scratchCount,
+                lastScratchDate: userData.lastScratchDate
+            });
+            
+            await updateBalance(reward);
+            showAlert(`Congratulations! You won ${reward} coins from the scratch card!`);
+            updateScratchCount();
+            
+            // Mark card as completed
+            scratchCardActive = false;
+            
+            // Remove event listeners
+            const events = ['mousedown', 'touchstart', 'mousemove', 'touchmove', 'mouseup', 'touchend', 'mouseout'];
+            events.forEach(event => {
+                canvas.removeEventListener(event, () => {});
+            });
+        }
+
+        async function handleBonusCode() {
+            const codeInput = document.getElementById('bonus-code-input');
+            const code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) return showAlert("Please enter a bonus code.");
+            
+            // Check if user has already used this code
+            if (userData.usedBonusCodes && userData.usedBonusCodes[code]) {
+                return showAlert("You have already used this bonus code.");
+            }
+            
+            // Check if code exists and is valid
+            if (!appConfig.bonusCodes || !appConfig.bonusCodes[code]) {
+                return showAlert("Invalid or expired bonus code.");
+            }
+            
+            const bonus = appConfig.bonusCodes[code];
+            
+            // Check if code has expired
+            if (bonus.expires && Date.now() > bonus.expires) {
+                return showAlert("This bonus code has expired.");
+            }
+            
+            // Apply bonus
+            await updateBalance(bonus.coins);
+            
+            // Mark code as used
+            const userRef = ref(db, 'users/' + currentUser.uid);
+            const usedBonusCodes = userData.usedBonusCodes || {};
+            usedBonusCodes[code] = true;
+            
+            await update(userRef, { usedBonusCodes: usedBonusCodes });
+            userData.usedBonusCodes = usedBonusCodes;
+            
+            showAlert(`Bonus code applied successfully! You received ${bonus.coins} coins.`);
+            codeInput.value = '';
+        }
+
+        window.claimReward = async function(taskType) {
+            const today = new Date().toISOString().split('T')[0];
+            const userRef = ref(db, 'users/' + currentUser.uid);
+
+            if (userData.lastAdWatchDate !== today) {
+                await update(userRef, { dailyAdCount: 0, lastAdWatchDate: today });
+                userData.dailyAdCount = 0;
+                userData.lastAdWatchDate = today;
+            }
+
+            if (userData.dailyAdCount >= (appConfig.dailyAdLimit || 10)) {
+                return showAlert("You've reached your daily ad limit.");
+            }
+            
+            if (typeof window.show_9804953 !== 'function') {
+                return showAlert("Ad service is not available. Please try again later.");
+            }
+            
+            let adPromise;
+            switch(taskType) {
+                case 'interstitial':
+                    adPromise = window.show_9804953();
+                    break;
+                case 'popup':
+                    adPromise = window.show_9804953('pop');
+                    break;
+                case 'miniApp':
+                    adPromise = window.show_9804953();
+                    break;
+                default:
+                    return;
+            }
+
+            adPromise.then(async () => {
+                const newCount = (userData.dailyAdCount || 0) + 1;
+                await update(userRef, { dailyAdCount: newCount });
+                userData.dailyAdCount = newCount;
+                
+                let rewardAmount = 0;
+                if (taskType === 'miniApp') {
+                    rewardAmount = 50; // Changed from 100 to 50 coins
+                } else {
+                    rewardAmount = 50;
+                }
+
+                if (rewardAmount > 0) {
+                    updateBalance(rewardAmount);
+                    showAlert(`Congratulations! You earned ${rewardAmount} coins.`);
+                }
+                updateAdsLeftCount();
+            }).catch(e => {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            });
+        }
+
+        function showAlert(message) {
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('custom-alert').classList.remove('hidden');
+            document.getElementById('alert-ok-btn').onclick = () => {
+                document.getElementById('custom-alert').classList.add('hidden');
+            };
+        }
+        window.showAlert = showAlert;
+
+    </script>
+</body>
+</html>
