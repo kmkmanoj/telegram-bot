@@ -12,25 +12,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            --card-bg: #2d3748;
+            --accent-color: #4299e1;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+        }
+        
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            color: #ffffff; 
+            background: var(--primary-bg);
+            color: var(--text-primary); 
         }
         .dark-bg { background-color: #1a202c; }
         .card-bg { 
-            background-color: #2d3748; 
+            background-color: var(--card-bg); 
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .border-accent { border-color: #4299e1; }
-        .text-accent { color: #4299e1; }
+        .border-accent { border-color: var(--accent-color); }
+        .text-accent { color: var(--accent-color); }
         .btn, .btn-accent, .btn-outline-accent { 
             transition: all 0.2s ease-in-out; 
             transform: scale(1); 
         }
         .btn:active, .btn-accent:active, .btn-outline-accent:active { transform: scale(0.95); }
         .btn-accent { 
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #3182ce 100%);
             color: white; 
             font-weight: bold; 
         }
@@ -38,11 +46,11 @@
             background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
         }
         .btn-outline-accent { 
-            border: 1px solid #4299e1; 
-            color: #4299e1; 
+            border: 1px solid var(--accent-color); 
+            color: var(--accent-color); 
         }
         .btn-outline-accent:hover { 
-            background-color: #4299e1; 
+            background-color: var(--accent-color); 
             color: white; 
         }
         .input-field { 
@@ -51,13 +59,13 @@
             color: white;
         }
         .input-field::placeholder {
-            color: #a0aec0;
+            color: var(--text-secondary);
         }
         .main-page { display: none; }
         .main-page.active { display: flex; animation: fadeIn 0.5s ease-in-out; }
         .sub-page { display: none; }
         .sub-page.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        .bottom-nav a.active { color: #4299e1; }
+        .bottom-nav a.active { color: var(--accent-color); }
         .notification-dot {
             position: absolute; top: -2px; right: -2px; width: 10px; height: 10px;
             background-color: #e53e3e; border-radius: 50%; border: 2px solid #1a202c; display: none;
@@ -72,7 +80,7 @@
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #3182ce 100%);
             border-radius: 4px;
             transition: width 0.5s ease;
         }
@@ -87,7 +95,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.8);
-            color: #4299e1;
+            color: var(--accent-color);
             font-weight: bold;
             padding: 5px 10px;
             border-radius: 20px;
@@ -99,8 +107,8 @@
             border-radius: 50%;
             background: conic-gradient(
                 from 0deg, 
-                #4299e1, #3182ce, #4299e1, #3182ce, 
-                #4299e1, #3182ce, #4299e1, #3182ce
+                var(--accent-color), #3182ce, var(--accent-color), #3182ce, 
+                var(--accent-color), #3182ce, var(--accent-color), #3182ce
             );
             position: relative;
             margin: 0 auto;
@@ -111,7 +119,7 @@
             position: absolute;
             width: 50px;
             height: 50px;
-            background: #2d3748;
+            background: var(--card-bg);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -120,9 +128,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4299e1;
+            color: var(--accent-color);
             font-weight: bold;
-            border: 4px solid #4299e1;
+            border: 4px solid var(--accent-color);
         }
         .wheel-item {
             position: absolute;
@@ -144,7 +152,7 @@
             height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
-            border-top: 30px solid #4299e1;
+            border-top: 30px solid var(--accent-color);
             z-index: 10;
         }
         .scratch-card-container {
@@ -163,7 +171,7 @@
             width: 140px;
             height: 140px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #3182ce 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -181,10 +189,175 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         .logo-gradient {
-            background: linear-gradient(135deg, #4299e1 0%, #38b2ac 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #38b2ac 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+        .scratch-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .scratch-popup-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+        }
+        #scratch-popup-canvas {
+            border-radius: 10px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        /* New styles for improved UI */
+        .task-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .skeleton-loader {
+            background: linear-gradient(90deg, #2d3748 25%, #3c4858 50%, #2d3748 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* New styles for improved UX */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #3182ce 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .featured-task {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-task::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        .reward-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .tutorial-highlight {
+            position: relative;
+            border: 2px dashed var(--accent-color) !important;
+            animation: highlightPulse 2s infinite;
+        }
+        @keyframes highlightPulse {
+            0% { border-color: var(--accent-color); }
+            50% { border-color: #3182ce; }
+            100% { border-color: var(--accent-color); }
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -238,6 +411,28 @@
         <main class="flex-grow">
             <!-- Home Page -->
             <div id="home-page" class="p-4 space-y-6 sub-page active">
+                <!-- Welcome Banner -->
+                <div class="welcome-banner">
+                    <h2 class="text-xl font-bold mb-1">Welcome back!</h2>
+                    <p class="text-sm opacity-90">Complete tasks to earn more coins</p>
+                </div>
+                
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="daily-earnings">0</div>
+                        <div class="stat-label">Today's Earnings</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-ads">0/10</div>
+                        <div class="stat-label">Ads Watched</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="streak-days">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+                
                 <div class="card-bg p-4 rounded-lg flex items-center justify-between">
                     <div>
                         <p class="text-gray-400 text-sm">Your Balance</p>
@@ -248,14 +443,22 @@
                 
                 <!-- Quick Actions -->
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors" onclick="navigateTo('spin-wheel-page')">
+                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors task-card" onclick="navigateTo('spin-wheel-page')">
                         <i data-lucide="circle" class="w-8 h-8 mx-auto mb-2 text-blue-400"></i>
                         <p class="text-sm font-medium">Spin Wheel</p>
                     </div>
-                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors" onclick="navigateTo('scratch-card-page')">
+                    <div class="card-bg p-3 rounded-lg text-center cursor-pointer hover:bg-gray-700 transition-colors task-card" onclick="navigateTo('scratch-card-page')">
                         <i data-lucide="square" class="w-8 h-8 mx-auto mb-2 text-blue-400"></i>
                         <p class="text-sm font-medium">Scratch Cards</p>
                     </div>
+                </div>
+                
+                <!-- Featured Task -->
+                <div class="featured-task">
+                    <span class="reward-badge">+30 Coins</span>
+                    <h3 class="font-bold text-white mb-2">Special Offer!</h3>
+                    <p class="text-sm text-white opacity-90 mb-3">Watch a short video and earn coins instantly</p>
+                    <button class="bg-white text-blue-600 font-bold px-4 py-2 rounded-lg text-sm w-full" onclick="claimReward('interstitial')">Claim Now</button>
                 </div>
                 
                 <section>
@@ -267,19 +470,19 @@
                         <p class="text-sm text-gray-400">Ads Left: <span id="ads-left-count">...</span></p>
                     </div>
                     <div class="space-y-3">
-                        <div class="bg-blue-500 p-3 rounded-lg flex items-center justify-between text-white">
+                        <div class="bg-blue-500 p-3 rounded-lg flex items-center justify-between text-white task-card">
                             <div class="flex items-center space-x-3"><span class="text-3xl">🤩</span><div><h3 class="font-bold">Watch Short Ad</h3><p class="text-xs font-medium">Rewarded Interstitial</p></div></div>
                             <button class="bg-white text-blue-500 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('interstitial')">Claim</button>
                         </div>
-                        <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between task-card">
                             <div class="flex items-center space-x-3"><span class="text-3xl">😎</span><div><h3 class="font-semibold">Click for Reward</h3><p class="text-xs text-gray-400">Rewarded Popup</p></div></div>
                             <button class="bg-white text-gray-900 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('popup')">Claim</button>
                         </div>
-                         <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                         <div class="card-bg p-3 rounded-lg flex items-center justify-between task-card">
                             <div class="flex items-center space-x-3"><span class="text-3xl">👀</span><div><h3 class="font-semibold">Watch a Video</h3><p class="text-xs text-gray-400">Rewarded Interstitial</p></div></div>
                             <button class="bg-white text-gray-900 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('interstitial')">Start</button>
                         </div>
-                        <div class="card-bg p-3 rounded-lg flex items-center justify-between">
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between task-card">
                             <div class="flex items-center space-x-3"><span class="text-3xl">🎮</span><div><h3 class="font-semibold">Play Mini App</h3><p class="text-xs text-gray-400">Get a big reward!</p></div></div>
                             <button class="bg-blue-500 text-white font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('miniApp')">Play</button>
                         </div>
@@ -349,10 +552,18 @@
                      <p class="text-sm text-gray-300">Share your code with friends.</p>
                  </div>
                  <button id="share-btn" class="w-full p-3 rounded-lg btn-accent">Share Your Code</button>
-                 <div class="card-bg p-4 rounded-lg mt-6">
+                 
+                 <!-- Only show referral input if user hasn't applied a code yet -->
+                 <div id="referral-input-container" class="card-bg p-4 rounded-lg mt-6">
                     <h3 class="font-semibold mb-3 text-center">Have someone's referral code?</h3>
                     <input id="enter-referral-code" type="text" placeholder="Enter code here" class="w-full p-3 rounded-lg input-field mb-3">
                     <button id="apply-referral-btn" class="w-full p-3 rounded-lg btn-outline-accent">Apply Code</button>
+                 </div>
+                 
+                 <!-- Show this if user has already applied a referral code -->
+                 <div id="referral-applied-container" class="card-bg p-4 rounded-lg mt-6 hidden">
+                    <h3 class="font-semibold mb-3 text-center text-green-400">✓ Referral Code Applied</h3>
+                    <p class="text-sm text-gray-300 text-center">You've already received your 300 coin bonus!</p>
                  </div>
             </div>
 
@@ -393,7 +604,7 @@
                         <div class="wheel-item" style="transform: rotate(0deg);">10</div>
                         <div class="wheel-item" style="transform: rotate(45deg);">20</div>
                         <div class="wheel-item" style="transform: rotate(90deg);">30</div>
-                        <div class="wheel-item" style="transform: rotate(135deg);">100</div>
+                        <div class="wheel-item" style="transform: rotate(135deg);">0</div> <!-- Changed from 100 to 0 -->
                         <div class="wheel-item" style="transform: rotate(180deg);">5</div>
                         <div class="wheel-item" style="transform: rotate(225deg);">25</div>
                         <div class="wheel-item" style="transform: rotate(270deg);">15</div>
@@ -414,16 +625,16 @@
                 <h2 class="text-xl font-bold text-center">Scratch Cards</h2>
                 <p class="text-center text-gray-400 mb-4">Scratch and win instant rewards!</p>
                 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="scratch-card-container" onclick="initiateScratchCard(1)">
-                        <div class="scratch-card-image">Up to 50 Coins</div>
-                        <canvas id="scratchCanvas1" width="140" height="140" class="scratch-card-canvas"></canvas>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="scratch-card-container">
+                        <div class="scratch-card-image">Up to 20 Coins</div>
                     </div>
-                    <div class="scratch-card-container" onclick="initiateScratchCard(2)">
-                        <div class="scratch-card-image">Up to 100 Coins</div>
-                        <canvas id="scratchCanvas2" width="140" height="140" class="scratch-card-canvas"></canvas>
+                    <div class="scratch-card-container">
+                        <div class="scratch-card-image">Up to 50 Coins</div>
                     </div>
                 </div>
+                
+                <button id="scratch-card-btn" class="w-full p-3 rounded-lg btn-accent">Open Scratch Card (Watch Ad)</button>
                 
                 <div class="text-center mt-4">
                     <p class="text-gray-400 mb-2">Cards Left Today: <span id="cards-left">2</span></p>
@@ -439,6 +650,16 @@
         </nav>
     </div>
     
+    <!-- Scratch Card Popup -->
+    <div id="scratch-popup" class="scratch-popup">
+        <div class="scratch-popup-content">
+            <h3 class="text-lg font-bold mb-2">Scratch to Reveal Your Prize!</h3>
+            <canvas id="scratch-popup-canvas" width="250" height="150"></canvas>
+            <p class="text-sm text-gray-400 mt-2">Scratch the area above to reveal your reward</p>
+            <button id="close-scratch-popup" class="mt-4 w-full p-2 rounded-lg bg-gray-600 text-white">Close</button>
+        </div>
+    </div>
+    
     <div id="custom-alert" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-800 rounded-lg p-6 w-full max-w-sm text-center">
             <p id="alert-message" class="mb-4"></p>
@@ -447,6 +668,7 @@
     </div>
 
     <script type="module">
+        // Firebase configuration - in a real app, this should be secured
         const firebaseConfig = {
             apiKey: "AIzaSyCE3pgdQPwk3YDmvFiDt504gy6GAstRudQ",
             authDomain: "wallet-money-37b8b.firebaseapp.com",
@@ -473,6 +695,8 @@
         let scratchCardActive = false;
         let scratchCardContext = null;
         let scratchCardId = null;
+        let currentScratchCardReward = 0;
+        let dailyEarnings = 0;
 
         const loader = document.getElementById('loader');
         const coinBalanceEl = document.getElementById('coin-balance');
@@ -490,12 +714,33 @@
         const spinsLeftEl = document.getElementById('spins-left');
         const cardsLeftEl = document.getElementById('cards-left');
         const backButton = document.getElementById('back-button');
+        const scratchPopup = document.getElementById('scratch-popup');
+        const scratchPopupCanvas = document.getElementById('scratch-popup-canvas');
+        const referralInputContainer = document.getElementById('referral-input-container');
+        const referralAppliedContainer = document.getElementById('referral-applied-container');
+        const dailyEarningsEl = document.getElementById('daily-earnings');
+        const totalAdsEl = document.getElementById('total-ads');
+        const streakDaysEl = document.getElementById('streak-days');
+
+        // Utility functions
+        const utils = {
+            formatNumber: (num) => num.toLocaleString(),
+            showLoading: () => loader.style.display = 'flex',
+            hideLoading: () => loader.style.display = 'none',
+            isValidEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+            getTodayDate: () => new Date().toISOString().split('T')[0],
+            getYesterdayDate: () => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                return yesterday.toISOString().split('T')[0];
+            }
+        };
 
         window.onload = () => {
             lucide.createIcons();
             setupEventListeners();
             showMainPage('auth-section');
-            loader.style.display = 'none';
+            utils.hideLoading();
             onAuthStateChanged(auth, handleAuthStateChange);
         };
 
@@ -509,13 +754,13 @@
 
         async function handleAuthStateChange(user) {
             if (user) {
-                loader.style.display = 'flex';
+                utils.showLoading();
                 currentUser = user;
                 await fetchUserData();
                 if (userData && userData.isBlocked) {
                     showAlert("Your account has been blocked.");
                     await signOut(auth);
-                    loader.style.display = 'none';
+                    utils.hideLoading();
                     return;
                 }
                 await fetchAppConfig();
@@ -523,7 +768,7 @@
                 updateUI();
                 showMainPage('app-container');
                 navigateTo('home-page');
-                loader.style.display = 'none';
+                utils.hideLoading();
             } else {
                 currentUser = null;
                 userData = null;
@@ -540,13 +785,29 @@
                     userData = snapshot.val();
                     
                     // Check if user has already claimed today's login bonus
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = utils.getTodayDate();
                     if (userData.lastLoginBonusDate === today) {
                         document.getElementById('claim-login-bonus').textContent = 'Already Claimed Today';
                         document.getElementById('claim-login-bonus').disabled = true;
                         document.getElementById('claim-login-bonus').classList.remove('btn-accent');
                         document.getElementById('claim-login-bonus').classList.add('bg-gray-600');
                     }
+                    
+                    // Update referral UI based on whether user has already applied a code
+                    if (userData.referredBy) {
+                        referralInputContainer.classList.add('hidden');
+                        referralAppliedContainer.classList.remove('hidden');
+                    } else {
+                        referralInputContainer.classList.remove('hidden');
+                        referralAppliedContainer.classList.add('hidden');
+                    }
+                    
+                    // Initialize daily earnings tracking
+                    if (!userData.dailyEarnings) {
+                        userData.dailyEarnings = 0;
+                    }
+                    dailyEarnings = userData.dailyEarnings;
+                    
                 } else {
                     // Create new user data if it doesn't exist
                     const ownReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -563,17 +824,18 @@
                         lastNotificationCheck: Date.now(),
                         createdAt: Date.now(),
                         dailyAdCount: 0, 
-                        lastAdWatchDate: new Date().toISOString().split('T')[0], 
+                        lastAdWatchDate: utils.getTodayDate(), 
                         spinCount: 0, 
-                        lastSpinDate: new Date().toISOString().split('T')[0],
+                        lastSpinDate: utils.getTodayDate(),
                         scratchCount: 0, 
-                        lastScratchDate: new Date().toISOString().split('T')[0],
+                        lastScratchDate: utils.getTodayDate(),
                         loginStreak: 0, 
                         lastLoginDate: null,
                         lastLoginBonusDate: null,
                         isBlocked: false,
                         usedBonusCodes: {},
-                        notificationsRead: true
+                        notificationsRead: true,
+                        dailyEarnings: 0
                     };
                     await set(userRef, defaultUserData);
                     userData = defaultUserData;
@@ -614,8 +876,8 @@
         function updateUI() {
             if (!userData) return;
             const balance = userData.balance || 0;
-            coinBalanceEl.textContent = balance;
-            walletCoinBalanceEl.textContent = balance;
+            coinBalanceEl.textContent = utils.formatNumber(balance);
+            walletCoinBalanceEl.textContent = utils.formatNumber(balance);
             profileNameEl.textContent = userData.name || 'No Name';
             profileEmailEl.textContent = userData.email || 'No Email';
             
@@ -627,8 +889,8 @@
             }
             
             referralCodeEl.textContent = userData.referralCode || '...';
-            minWithdrawalInfoEl.textContent = `${appConfig.minWithdrawal || 5000} Coins`;
-            coinValueInfoEl.textContent = `${appConfig.coinValueCoins || 1000} Coins = ₹${appConfig.coinValueInr || 10}`;
+            minWithdrawalInfoEl.textContent = `${utils.formatNumber(appConfig.minWithdrawal || 5000)} Coins`;
+            coinValueInfoEl.textContent = `${utils.formatNumber(appConfig.coinValueCoins || 1000)} Coins = ₹${appConfig.coinValueInr || 10}`;
             withdrawMethodSelect.innerHTML = '';
             (appConfig.paymentMethods || []).forEach(method => {
                 const option = document.createElement('option');
@@ -642,16 +904,30 @@
             updateScratchCount();
             updateLoginStreak();
             
+            // Update stats
+            dailyEarningsEl.textContent = utils.formatNumber(dailyEarnings);
+            totalAdsEl.textContent = `${userData.dailyAdCount || 0}/${appConfig.dailyAdLimit || 10}`;
+            streakDaysEl.textContent = userData.loginStreak || 0;
+            
             // Show/hide back button
             if (pageHistory.length > 1) {
                 backButton.classList.remove('hidden');
             } else {
                 backButton.classList.add('hidden');
             }
+            
+            // Update referral UI based on whether user has already applied a code
+            if (userData.referredBy) {
+                referralInputContainer.classList.add('hidden');
+                referralAppliedContainer.classList.remove('hidden');
+            } else {
+                referralInputContainer.classList.remove('hidden');
+                referralAppliedContainer.classList.add('hidden');
+            }
         }
 
         function updateAdsLeftCount() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             if (userData.lastAdWatchDate !== today) {
                 userData.dailyAdCount = 0;
             }
@@ -660,7 +936,7 @@
         }
         
         function updateSpinCount() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             if (userData.lastSpinDate !== today) {
                 userData.spinCount = 0;
             }
@@ -669,7 +945,7 @@
         }
         
         function updateScratchCount() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             if (userData.lastScratchDate !== today) {
                 userData.scratchCount = 0;
             }
@@ -678,15 +954,13 @@
         }
         
         function updateLoginStreak() {
-            const today = new Date().toISOString().split('T')[0];
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            const today = utils.getTodayDate();
+            const yesterday = utils.getYesterdayDate();
             
             if (!userData.lastLoginDate) {
                 // First login
                 userData.loginStreak = 1;
-            } else if (userData.lastLoginDate === yesterdayStr) {
+            } else if (userData.lastLoginDate === yesterday) {
                 // Consecutive login
                 userData.loginStreak = (userData.loginStreak || 0) + 1;
             } else if (userData.lastLoginDate !== today) {
@@ -791,10 +1065,12 @@
             document.getElementById('claim-login-bonus').addEventListener('click', claimLoginBonus);
             document.getElementById('spin-btn').addEventListener('click', spinWheel);
             document.getElementById('apply-bonus-code-btn').addEventListener('click', handleBonusCode);
+            document.getElementById('scratch-card-btn').addEventListener('click', openScratchCard);
+            document.getElementById('close-scratch-popup').addEventListener('click', closeScratchPopup);
             withdrawMethodSelect.addEventListener('change', updateDynamicPaymentFields);
             
             // Setup scratch card event listeners
-            setupScratchCards();
+            setupScratchPopup();
         }
 
         async function handleSignup() {
@@ -806,11 +1082,15 @@
                 return showAlert("Please fill all fields.");
             }
             
+            if (!utils.isValidEmail(email)) {
+                return showAlert("Please enter a valid email address.");
+            }
+            
             if (password.length < 6) {
                 return showAlert("Password should be at least 6 characters.");
             }
             
-            loader.style.display = 'flex';
+            utils.showLoading();
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 // User creation successful, handleAuthStateChange will be triggered automatically
@@ -827,7 +1107,7 @@
                 }
                 
                 showAlert(errorMessage);
-                loader.style.display = 'none';
+                utils.hideLoading();
             }
         }
 
@@ -839,7 +1119,11 @@
                 return showAlert("Please enter email and password.");
             }
             
-            loader.style.display = 'flex';
+            if (!utils.isValidEmail(email)) {
+                return showAlert("Please enter a valid email address.");
+            }
+            
+            utils.showLoading();
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 // Login successful, handleAuthStateChange will be triggered automatically
@@ -856,7 +1140,7 @@
                 }
                 
                 showAlert(errorMessage);
-                loader.style.display = 'none';
+                utils.hideLoading();
             }
         }
 
@@ -973,7 +1257,7 @@
                     historyList.innerHTML += `
                         <div class="card-bg p-3 rounded-lg flex items-center justify-between">
                             <div>
-                                <p class="font-semibold">${request.amount} Coins - ${request.method}</p>
+                                <p class="font-semibold">${utils.formatNumber(request.amount)} Coins - ${request.method}</p>
                                 <p class="text-xs text-gray-400">${date}</p>
                                 ${request.paymentDetail ? `<p class="text-xs text-gray-400">${request.paymentDetail}</p>` : ''}
                             </div>
@@ -990,7 +1274,7 @@
             if (userData.referredBy) return showAlert("You have already used a referral code.");
             
             // Check if user has completed all ads for today
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             if (userData.lastAdWatchDate !== today || userData.dailyAdCount < (appConfig.dailyAdLimit || 10)) {
                 return showAlert("You need to complete all ads for today to apply a referral code.");
             }
@@ -999,10 +1283,10 @@
             const code = codeInput.value.trim().toUpperCase();
             if (!code) return showAlert("Please enter a code.");
             if (code === userData.referralCode) return showAlert("You cannot use your own referral code.");
-            loader.style.display = 'flex';
+            utils.showLoading();
             await applyReferralBonus(code, true);
             codeInput.value = '';
-            loader.style.display = 'none';
+            utils.hideLoading();
         }
 
         async function applyReferralBonus(referrerCode, isManualApply = false) {
@@ -1060,6 +1344,14 @@
             const userRef = ref(db, 'users/' + currentUser.uid);
             await update(userRef, { balance: newBalance });
             userData.balance = newBalance;
+            
+            // Update daily earnings
+            if (amount > 0) {
+                dailyEarnings += amount;
+                await update(userRef, { dailyEarnings: dailyEarnings });
+                userData.dailyEarnings = dailyEarnings;
+            }
+            
             updateUI();
         }
 
@@ -1071,11 +1363,14 @@
             const minWithdrawal = appConfig.minWithdrawal || 5000;
 
             if (!amount || amount <= 0) return showAlert("Please enter a valid amount.");
-            if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${minWithdrawal} coins.`);
+            if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${utils.formatNumber(minWithdrawal)} coins.`);
             if (amount > userData.balance) return showAlert("Insufficient balance.");
             if (!paymentDetail) return showAlert("Please enter payment details (UPI ID or Paytm Number).");
 
+            // Show ad before withdrawal
             try {
+                await window.show_9804953();
+                
                 await updateBalance(-amount);
                 
                 // Create withdrawal request
@@ -1135,7 +1430,7 @@
         
         async function claimLoginBonus() {
             // Check if user has completed all ads for today
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             if (userData.lastAdWatchDate !== today || userData.dailyAdCount < (appConfig.dailyAdLimit || 10)) {
                 return showAlert("You need to complete all ads for today to claim the daily bonus.");
             }
@@ -1185,7 +1480,7 @@
         }
         
         async function spinWheel() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             const userRef = ref(db, 'users/' + currentUser.uid);
             
             if (userData.lastSpinDate !== today) {
@@ -1215,12 +1510,16 @@
                 
                 // Calculate prize based on final position (simplified)
                 setTimeout(async () => {
-                    const prizes = [10, 20, 30, 100, 5, 25, 15, 19];
+                    const prizes = [10, 20, 30, 0, 5, 25, 15, 19]; // Changed 100 to 0
                     const prizeIndex = Math.floor((degrees % 360) / 45);
                     const prize = prizes[prizeIndex];
                     
                     await updateBalance(prize);
-                    showAlert(`Congratulations! You won ${prize} coins!`);
+                    if (prize === 0) {
+                        showAlert("Better luck next time! You didn't win any coins this spin.");
+                    } else {
+                        showAlert(`Congratulations! You won ${prize} coins!`);
+                    }
                     updateSpinCount();
                 }, 4100);
                 
@@ -1230,28 +1529,23 @@
             }
         }
         
-        function setupScratchCards() {
-            // Initialize scratch card canvases
-            for (let i = 1; i <= 2; i++) {
-                const canvas = document.getElementById(`scratchCanvas${i}`);
-                const ctx = canvas.getContext('2d');
-                
-                // Fill with gray overlay
-                ctx.fillStyle = 'rgba(100, 100, 100, 0.9)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Add scratch text
-                ctx.font = '14px Arial';
-                ctx.fillStyle = 'white';
-                ctx.textAlign = 'center';
-                ctx.fillText('Scratch here!', canvas.width / 2, canvas.height / 2);
-            }
+        function setupScratchPopup() {
+            const canvas = scratchPopupCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Fill with gray overlay
+            ctx.fillStyle = 'rgba(100, 100, 100, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add scratch text
+            ctx.font = '16px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('Scratch here to reveal your prize!', canvas.width / 2, canvas.height / 2);
         }
         
-        function initiateScratchCard(cardId) {
-            if (scratchCardActive) return;
-            
-            const today = new Date().toISOString().split('T')[0];
+        function openScratchCard() {
+            const today = utils.getTodayDate();
             
             if (userData.lastScratchDate !== today) {
                 userData.scratchCount = 0;
@@ -1264,27 +1558,15 @@
             
             // Show ad before scratch card
             window.show_9804953('pop').then(async () => {
-                scratchCardActive = true;
-                scratchCardId = cardId;
+                // Generate random reward (up to 20 or 50 coins based on card type)
+                const cardType = Math.random() > 0.5 ? 1 : 2; // 1: up to 20 coins, 2: up to 50 coins
+                currentScratchCardReward = cardType === 1 ? 
+                    Math.floor(Math.random() * 20) + 1 : 
+                    Math.floor(Math.random() * 50) + 1;
                 
-                const canvas = document.getElementById(`scratchCanvas${cardId}`);
-                scratchCardContext = canvas.getContext('2d');
-                
-                // Set up scratch card
-                canvas.style.cursor = 'pointer';
-                
-                // Add event listeners for scratching
-                canvas.addEventListener('mousedown', startScratching);
-                canvas.addEventListener('touchstart', startScratching);
-                
-                // Set maximum reward based on card type
-                const maxReward = cardId === 1 ? 50 : 100;
-                
-                // Generate random reward
-                const reward = Math.floor(Math.random() * maxReward) + 1;
-                
-                // Store reward in data attribute
-                canvas.setAttribute('data-reward', reward);
+                // Show the scratch popup
+                scratchPopup.style.display = 'flex';
+                setupScratchPopup();
                 
             }).catch(e => {
                 console.error("Ad error:", e);
@@ -1292,11 +1574,15 @@
             });
         }
         
+        function closeScratchPopup() {
+            scratchPopup.style.display = 'none';
+        }
+        
         function startScratching(e) {
             if (!scratchCardActive) return;
             
-            const canvas = e.target;
-            const ctx = scratchCardContext;
+            const canvas = scratchPopupCanvas;
+            const ctx = canvas.getContext('2d');
             const rect = canvas.getBoundingClientRect();
             
             let isDrawing = false;
@@ -1357,14 +1643,10 @@
             canvas.addEventListener('mouseup', stop);
             canvas.addEventListener('touchend', stop);
             canvas.addEventListener('mouseout', stop);
-            
-            // Remove the initial event listener
-            canvas.removeEventListener('mousedown', startScratching);
-            canvas.removeEventListener('touchstart', startScratching);
         }
         
         function checkScratchCompletion(canvas) {
-            const ctx = scratchCardContext;
+            const ctx = canvas.getContext('2d');
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             let transparentPixels = 0;
@@ -1379,13 +1661,11 @@
             
             // If 30% or more is scratched, reveal the reward
             if (transparency >= 0.3) {
-                finishScratchCard(canvas);
+                finishScratchCard();
             }
         }
         
-        async function finishScratchCard(canvas) {
-            const reward = parseInt(canvas.getAttribute('data-reward'));
-            
+        async function finishScratchCard() {
             // Increment scratch count
             userData.scratchCount += 1;
             const userRef = ref(db, 'users/' + currentUser.uid);
@@ -1394,18 +1674,14 @@
                 lastScratchDate: userData.lastScratchDate
             });
             
-            await updateBalance(reward);
-            showAlert(`Congratulations! You won ${reward} coins from the scratch card!`);
+            await updateBalance(currentScratchCardReward);
+            showAlert(`Congratulations! You won ${currentScratchCardReward} coins from the scratch card!`);
             updateScratchCount();
             
-            // Mark card as completed
-            scratchCardActive = false;
-            
-            // Remove event listeners
-            const events = ['mousedown', 'touchstart', 'mousemove', 'touchmove', 'mouseup', 'touchend', 'mouseout'];
-            events.forEach(event => {
-                canvas.removeEventListener(event, () => {});
-            });
+            // Close the popup after a delay
+            setTimeout(() => {
+                scratchPopup.style.display = 'none';
+            }, 2000);
         }
 
         async function handleBonusCode() {
@@ -1447,7 +1723,7 @@
         }
 
         window.claimReward = async function(taskType) {
-            const today = new Date().toISOString().split('T')[0];
+            const today = utils.getTodayDate();
             const userRef = ref(db, 'users/' + currentUser.uid);
 
             if (userData.lastAdWatchDate !== today) {
@@ -1484,12 +1760,8 @@
                 await update(userRef, { dailyAdCount: newCount });
                 userData.dailyAdCount = newCount;
                 
-                let rewardAmount = 0;
-                if (taskType === 'miniApp') {
-                    rewardAmount = 50; // Changed from 100 to 50 coins
-                } else {
-                    rewardAmount = 50;
-                }
+                // Changed from 50 to 30 coins for all tasks
+                const rewardAmount = 30;
 
                 if (rewardAmount > 0) {
                     updateBalance(rewardAmount);
@@ -1510,6 +1782,34 @@
             };
         }
         window.showAlert = showAlert;
+
+        // New function to create confetti effect
+        function createConfetti() {
+            const colors = ['#4299e1', '#3182ce', '#2b6cb0', '#f56565', '#ed8936', '#ecc94b', '#48bb78', '#38a169'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.body.appendChild(confetti);
+                
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1, transform: `rotate(0deg) translateX(0)` },
+                    { top: '100vh', opacity: 0, transform: `rotate(720deg) translateX(${Math.random() * 200 - 100}px)` }
+                ], {
+                    duration: 1000 + Math.random() * 3000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.1, 1)'
+                });
+                
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
 
     </script>
 </body>
