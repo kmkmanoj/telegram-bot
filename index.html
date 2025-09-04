@@ -359,6 +359,32 @@
             z-index: 1000;
             pointer-events: none;
         }
+        .telegram-bar {
+            background: linear-gradient(135deg, #229ED9 0%, #2AABEE 100%);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .telegram-icon {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        .fee-calculation {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
     </style>
 </head>
 <body class="max-w-md mx-auto">
@@ -417,6 +443,20 @@
                     <p class="text-sm opacity-90">Complete tasks to earn more coins</p>
                 </div>
                 
+                <!-- Telegram Announcement Bar -->
+                <div class="telegram-bar" onclick="openTelegramChannel('dailymintannouncements')">
+                    <div class="flex items-center">
+                        <div class="telegram-icon">
+                            <i data-lucide="send" class="w-4 h-4 text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">Join Our Telegram</h3>
+                            <p class="text-xs text-white opacity-90">Get daily updates and exclusive rewards</p>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-white"></i>
+                </div>
+                
                 <!-- Stats Overview -->
                 <div class="stats-grid">
                     <div class="stat-item">
@@ -470,6 +510,20 @@
                         <p class="text-sm text-gray-400">Ads Left: <span id="ads-left-count">...</span></p>
                     </div>
                     <div class="space-y-3">
+                        <!-- Telegram Task -->
+                        <div class="card-bg p-3 rounded-lg flex items-center justify-between task-card" id="telegram-task">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Join Telegram Channel</h3>
+                                    <p class="text-xs text-gray-400">One-time reward of 50 coins</p>
+                                </div>
+                            </div>
+                            <button class="bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-sm btn" onclick="claimTelegramTask()">Join</button>
+                        </div>
+                        
                         <div class="bg-blue-500 p-3 rounded-lg flex items-center justify-between text-white task-card">
                             <div class="flex items-center space-x-3"><span class="text-3xl">🤩</span><div><h3 class="font-bold">Watch Short Ad</h3><p class="text-xs font-medium">Rewarded Interstitial</p></div></div>
                             <button class="bg-white text-blue-500 font-bold px-6 py-2 rounded-lg text-sm btn" onclick="claimReward('interstitial')">Claim</button>
@@ -529,8 +583,26 @@
                     <p class="text-sm text-gray-400 mb-1">Current Balance: <span class="font-bold text-blue-400"><span id="wallet-coin-balance">0</span> Coins</span></p>
                     <p class="text-sm text-gray-400 mb-2">Minimum Withdrawal: <span id="min-withdrawal-info">...</span> Coins</p>
                     <p class="text-sm text-gray-400 mb-4 font-semibold" id="coin-value-info">...</p>
-                    <input id="withdraw-amount" type="number" placeholder="Enter coin amount" class="w-full p-3 rounded-lg input-field mb-3">
-                    <select id="withdraw-method" class="w-full p-3 rounded-lg input-field mb-3"></select>
+                    
+                    <input id="withdraw-amount" type="number" placeholder="Enter coin amount" class="w-full p-3 rounded-lg input-field mb-3" oninput="calculateWithdrawalFee()">
+                    
+                    <!-- Fee Calculation -->
+                    <div class="fee-calculation">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm">Platform Fee (10%):</span>
+                            <span class="text-sm font-semibold" id="platform-fee">0 Coins</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm">You Will Receive:</span>
+                            <span class="text-sm font-semibold text-green-400" id="net-amount">0 Coins</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Cash Value:</span>
+                            <span class="text-sm font-semibold" id="cash-value">₹0</span>
+                        </div>
+                    </div>
+                    
+                    <select id="withdraw-method" class="w-full p-3 rounded-lg input-field my-3"></select>
                     <div id="payment-details-container"></div>
                     <button id="withdraw-btn" class="w-full p-3 rounded-lg btn-accent mt-3">Request Withdrawal</button>
                 </div>
@@ -721,6 +793,9 @@
         const dailyEarningsEl = document.getElementById('daily-earnings');
         const totalAdsEl = document.getElementById('total-ads');
         const streakDaysEl = document.getElementById('streak-days');
+        const telegramTaskButton = document.getElementById('telegram-task');
+        const bonusCodeInput = document.getElementById('bonus-code-input');
+        const applyBonusCodeBtn = document.getElementById('apply-bonus-code-btn');
 
         // Utility functions
         const utils = {
@@ -802,6 +877,11 @@
                         referralAppliedContainer.classList.add('hidden');
                     }
                     
+                    // Check if user has completed Telegram task
+                    if (userData.telegramTaskCompleted) {
+                        markTaskAsCompleted(telegramTaskButton);
+                    }
+                    
                     // Initialize daily earnings tracking
                     if (!userData.dailyEarnings) {
                         userData.dailyEarnings = 0;
@@ -835,7 +915,8 @@
                         isBlocked: false,
                         usedBonusCodes: {},
                         notificationsRead: true,
-                        dailyEarnings: 0
+                        dailyEarnings: 0,
+                        telegramTaskCompleted: false
                     };
                     await set(userRef, defaultUserData);
                     userData = defaultUserData;
@@ -864,9 +945,10 @@
                     dailySpinLimit: 3,
                     dailyScratchLimit: 2,
                     bonusCodes: {
-                        "WELCOME100": { coins: 100, expires: 1735689600000 },
-                        "FREECOINS50": { coins: 50, expires: 1735689600000 }
-                    }
+                        "WELCOME100": { coins: 100, expires: 1735689600000, claims: 100 },
+                        "FREECOINS50": { coins: 50, expires: 1735689600000, claims: 50 }
+                    },
+                    platformFee: 10 // 10% platform fee
                 };
             } catch (error) {
                 console.error("Error fetching app config:", error);
@@ -1355,17 +1437,39 @@
             updateUI();
         }
 
+        function calculateWithdrawalFee() {
+            const amount = parseInt(document.getElementById('withdraw-amount').value) || 0;
+            const platformFee = appConfig.platformFee || 10; // Default to 10% if not set
+            
+            const feeAmount = Math.floor(amount * (platformFee / 100));
+            const netAmount = amount - feeAmount;
+            
+            // Calculate cash value
+            const coinValue = appConfig.coinValueInr || 10;
+            const coinValueCoins = appConfig.coinValueCoins || 1000;
+            const cashValue = (netAmount / coinValueCoins) * coinValue;
+            
+            document.getElementById('platform-fee').textContent = `${utils.formatNumber(feeAmount)} Coins`;
+            document.getElementById('net-amount').textContent = `${utils.formatNumber(netAmount)} Coins`;
+            document.getElementById('cash-value').textContent = `₹${cashValue.toFixed(2)}`;
+        }
+
         async function handleWithdrawal() {
             const amount = parseInt(document.getElementById('withdraw-amount').value);
             const method = document.getElementById('withdraw-method').value;
             const paymentDetailInput = document.getElementById('payment-detail-input');
             const paymentDetail = paymentDetailInput ? paymentDetailInput.value.trim() : '';
             const minWithdrawal = appConfig.minWithdrawal || 5000;
+            const platformFee = appConfig.platformFee || 10;
 
             if (!amount || amount <= 0) return showAlert("Please enter a valid amount.");
             if (amount < minWithdrawal) return showAlert(`Minimum withdrawal is ${utils.formatNumber(minWithdrawal)} coins.`);
             if (amount > userData.balance) return showAlert("Insufficient balance.");
             if (!paymentDetail) return showAlert("Please enter payment details (UPI ID or Paytm Number).");
+
+            // Calculate fee and net amount
+            const feeAmount = Math.floor(amount * (platformFee / 100));
+            const netAmount = amount - feeAmount;
 
             // Show ad before withdrawal
             try {
@@ -1383,15 +1487,22 @@
                     userName: userData.name, 
                     userEmail: userData.email,
                     amount: amount, 
+                    netAmount: netAmount,
+                    feeAmount: feeAmount,
                     method: method, 
                     paymentDetail: paymentDetail, 
                     status: "pending", 
                     requestedAt: Date.now()
                 });
                 
-                showAlert("Withdrawal request submitted successfully!");
+                showAlert(`Withdrawal request submitted successfully! ₹${feeAmount} coins deducted as platform fee.`);
                 document.getElementById('withdraw-amount').value = '';
                 paymentDetailInput.value = '';
+                
+                // Reset fee calculation
+                document.getElementById('platform-fee').textContent = '0 Coins';
+                document.getElementById('net-amount').textContent = '0 Coins';
+                document.getElementById('cash-value').textContent = '₹0';
                 
                 // Reload withdrawal history
                 loadWithdrawalHistory();
@@ -1685,8 +1796,7 @@
         }
 
         async function handleBonusCode() {
-            const codeInput = document.getElementById('bonus-code-input');
-            const code = codeInput.value.trim().toUpperCase();
+            const code = bonusCodeInput.value.trim().toUpperCase();
             
             if (!code) return showAlert("Please enter a bonus code.");
             
@@ -1707,19 +1817,83 @@
                 return showAlert("This bonus code has expired.");
             }
             
-            // Apply bonus
-            await updateBalance(bonus.coins);
+            // Check if code has claims left
+            if (bonus.claims <= 0) {
+                return showAlert("This bonus code has no claims left.");
+            }
             
-            // Mark code as used
-            const userRef = ref(db, 'users/' + currentUser.uid);
-            const usedBonusCodes = userData.usedBonusCodes || {};
-            usedBonusCodes[code] = true;
+            // Show ad before claiming bonus
+            try {
+                await window.show_9804953();
+                
+                // Apply bonus
+                await updateBalance(bonus.coins);
+                
+                // Update bonus code claims
+                const configRef = ref(db, 'config/main/bonusCodes/' + code);
+                await update(configRef, { claims: bonus.claims - 1 });
+                
+                // Mark code as used
+                const userRef = ref(db, 'users/' + currentUser.uid);
+                const usedBonusCodes = userData.usedBonusCodes || {};
+                usedBonusCodes[code] = true;
+                
+                await update(userRef, { usedBonusCodes: usedBonusCodes });
+                userData.usedBonusCodes = usedBonusCodes;
+                
+                showAlert(`Bonus code applied successfully! You received ${bonus.coins} coins.`);
+                bonusCodeInput.value = '';
+                
+            } catch (e) {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            }
+        }
+
+        function openTelegramChannel(channel) {
+            window.open(`https://t.me/${channel}`, '_blank');
+        }
+
+        async function claimTelegramTask() {
+            if (userData.telegramTaskCompleted) {
+                return showAlert("You have already completed this task.");
+            }
             
-            await update(userRef, { usedBonusCodes: usedBonusCodes });
-            userData.usedBonusCodes = usedBonusCodes;
-            
-            showAlert(`Bonus code applied successfully! You received ${bonus.coins} coins.`);
-            codeInput.value = '';
+            // Show ad before opening Telegram
+            try {
+                await window.show_9804953();
+                
+                // Open Telegram channel
+                openTelegramChannel('myonlineshoppingbestdeals');
+                
+                // Update user data
+                const userRef = ref(db, 'users/' + currentUser.uid);
+                await update(userRef, { 
+                    telegramTaskCompleted: true 
+                });
+                userData.telegramTaskCompleted = true;
+                
+                // Add reward
+                await updateBalance(50);
+                
+                // Mark task as completed
+                markTaskAsCompleted(telegramTaskButton);
+                
+                showAlert("Congratulations! You received 50 coins for joining our Telegram channel.");
+                
+            } catch (e) {
+                console.error("Ad error:", e);
+                showAlert('Ad could not be displayed. Please try again later.');
+            }
+        }
+
+        function markTaskAsCompleted(taskElement) {
+            taskElement.classList.add('task-completed');
+            const button = taskElement.querySelector('button');
+            button.textContent = 'Completed';
+            button.disabled = true;
+            button.classList.remove('bg-blue-500');
+            button.classList.add('bg-gray-600');
         }
 
         window.claimReward = async function(taskType) {
